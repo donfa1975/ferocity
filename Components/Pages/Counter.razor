@@ -1,0 +1,49 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+
+<PageTitle>Counter</PageTitle>
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+    <MudPaper Elevation="4" Class="pa-6">
+        <MudText Typo="Typo.h4" GutterBottom="true">Contador con MudBlazor</MudText>
+        <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mb-4">
+            Pulsa el botón para comprobar la interactividad de Blazor Server.
+        </MudText>
+
+        <MudText Typo="Typo.h2" Align="Align.Center" Color="Color.Primary" Class="my-6" aria-live="polite">
+            @currentCount
+        </MudText>
+
+        <MudProgressLinear Color="Color.Primary" Value="ProgressValue" Class="mb-6" />
+
+        <div class="d-flex justify-center flex-wrap gap-3">
+            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="ResetCount">
+                Reiniciar
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="IncrementCount">
+                Incrementar
+            </MudButton>
+        </div>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private int currentCount;
+    private double ProgressValue => currentCount % 11 / 10d * 100;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+        Snackbar.Add($"Contador: {currentCount}", Severity.Success);
+    }
+
+    private void ResetCount() => currentCount = 0;
+
+    [Inject]
+    private ISnackbar Snackbar { get; set; } = default!;
+}
