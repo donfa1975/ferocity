@@ -1,0 +1,277 @@
+﻿@page "/inicio"
+@layout EmptyLayout
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ferocity Academy — Kickboxing · Jiu Jitsu · MMA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="nav">
+
+            <img src="imagenes/logo3.png" alt="Ferocity Academy">
+     
+            <nav class="nav-links">
+                <a href="#disciplinas">Disciplinas</a>
+                <a href="#academia">Academia</a>
+                <a href="#horarios">Horarios</a>
+                <a href="#entrenadores">Entrenadores</a>
+                <a href="#contacto">Contacto</a>
+            </nav>
+            <a href="/login" class="nav-cta">Iniciar sesión</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-slash"></div>
+        <div class="hero-grain"></div>
+        <div class="wrap hero-inner">
+            <p class="hero-eyebrow">KICKBOXING · JIU JITSU · MMA</p>
+            <h1>Fortalece tu cuerpo<br>Tu mente, y<br>Forja tu<em>espíritu</em>.</h1>
+            <p>Ferocity Academy es un espacio de combate real: técnica, disciplina y trabajo duro, guiados por entrenadores que compitieron antes de enseñar. Sin atajos, sin excusas.</p>
+            <div class="hero-actions">
+                <a href="#contacto" class="btn-primary">Reserva tu clase gratis</a>
+                <a href="#disciplinas" class="btn-ghost">Ver disciplinas</a>
+            </div>
+            <div class="hero-stats">
+                <div><strong>12+</strong><span>años formando peleadores</span></div>
+                <div><strong>3</strong><span>disciplinas bajo un mismo techo</span></div>
+                <div><strong>100+</strong><span>alumnos activos</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="disciplinas">
+        <div class="wrap">
+            <div class="section-head reveal">
+                <div>
+                    <p class="section-tag">Nuestras disciplinas</p>
+                    <h2>Tres caminos, una misma actitud</h2>
+                </div>
+                <p>Elige tu disciplina o combina las tres. Cada clase está pensada para llevarte un paso más allá de donde crees que puedes llegar.</p>
+            </div>
+            <div class="disciplines reveal">
+                <div class="discipline">
+                    <span class="num">01</span>
+                    <img src="imagenes/item2.png" />
+                    <h3>Kickboxing</h3>
+                    <p>Golpeo de pie a máxima intensidad: puños, patadas y rodillas. Trabajo de saco, pao y combate técnico para forjar potencia y resistencia.</p>
+                </div>
+                <div class="discipline">
+                    <span class="num">02</span>
+                    <img src="imagenes/item1.png" />
+                    <h3>Jiu Jitsu</h3>
+                    <p>El arte suave que domina sin fuerza bruta. Suelo, palancas y estrangulaciones: ajedrez físico para cuerpo y mente.</p>
+                </div>
+                <div class="discipline">
+                    <span class="num">03</span>
+                    <img src="imagenes/item3.png" style="width:300px" />
+                    <h3>MMA</h3>
+                    <p>Todo se une aquí: golpeo, derribo y sumisión. Entrenamiento integral para quienes quieren pelear de verdad, arriba y en el suelo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="academia">
+        <div class="wrap split">
+            <div class="split-visual reveal">
+                <img src="imagenes/academia.jpeg" style="width:90%" alt="Escudo Ferocity Academy">
+            </div>
+            <div class="split-copy reveal">
+                <p class="section-tag">La academia</p>
+                <h2>Forja tu carácter</h2>
+                <p>No necesitas ser un atleta para empezar. Necesitas decidirte.</p>
+                <p>En Ferocity entrenamos Kickboxing, Jiu-Jitsu y MMA en un ambiente de disciplina, respeto y exigencia. Cada clase es una oportunidad para aprender algo nuevo, superar tus propios límites y convertir el esfuerzo en progreso.</p>
+                <div class="split-list">
+                    <div>
+                        <strong>→</strong>
+                        <p><strong style="color:var(--chalk); font-family:'Barlow'; font-weight:600;">Grupos por nivel</strong><br>De iniciación a competición, con progresión de cinturón y grado real.</p>
+                    </div>
+                    <div>
+                        <strong>→</strong>
+                        <p><strong style="color:var(--chalk); font-family:'Barlow'; font-weight:600;">Instructores certificados</strong><br>Peleadores activos y retirados con trayectoria en circuito amateur y profesional.</p>
+                    </div>
+                    <div>
+                        <strong>→</strong>
+                        <p><strong style="color:var(--chalk); font-family:'Barlow'; font-weight:600;">Equipo incluido</strong><br>Guantines, protecciones y tatami disponibles para tu primera clase, sin costo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="horarios">
+        <div class="wrap">
+            <div class="section-head reveal">
+                <div>
+                    <p class="section-tag">Horarios</p>
+                    <h2>Encuentra tu tiempo de entrenamiento</h2>
+                </div>
+                <p>Clases de lunes a sábado, en franjas de mañana, tarde y noche. Cupos limitados por grupo.</p>
+            </div>
+            <div class="schedule-scroll reveal">
+                <table class="schedule-table">
+                    <thead>
+                        <tr><th>Horario</th><th>Lunes</th><th>Miércoles</th><th>Viernes</th><th>Sábado</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>06:30 – 07:30</td>
+                            <td><span class="tag-pill">Kickboxing</span></td>
+                            <td><span class="tag-pill">MMA</span></td>
+                            <td><span class="tag-pill">Kickboxing</span></td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>12:00 – 13:00</td>
+                            <td><span class="tag-pill">Jiu Jitsu</span></td>
+                            <td>—</td>
+                            <td><span class="tag-pill">Jiu Jitsu</span></td>
+                            <td><span class="tag-pill">Sparring abierto</span></td>
+                        </tr>
+                        <tr>
+                            <td>18:00 – 19:15</td>
+                            <td><span class="tag-pill">MMA</span></td>
+                            <td><span class="tag-pill">Kickboxing</span></td>
+                            <td><span class="tag-pill">MMA</span></td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td>19:30 – 20:45</td>
+                            <td><span class="tag-pill">Jiu Jitsu</span></td>
+                            <td><span class="tag-pill">Jiu Jitsu</span></td>
+                            <td><span class="tag-pill">Kickboxing</span></td>
+                            <td>—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="entrenadores">
+        <div class="wrap">
+            <div class="section-head reveal">
+                <div>
+                    <p class="section-tag">Entrenadores</p>
+                    <h2>Entrena con quienes conocen el camino</h2>
+                </div>
+                <p>Cada disciplina tiene un responsable dedicado, presente en cada clase de principio a fin.</p>
+            </div>
+            <div class="coaches reveal">
+                <div class="coach">
+                    <div class="coach-photo">
+                        <img src="imagenes/dilker.png" style="width:90%" alt="Escudo Ferocity Academy">
+                    </div>
+                    <h3>Professor Dilker</h3>
+                    <span>Jiu Jitsu</span>
+                    <p>Cinturón negro, especializado en fundamentos técnicos y competición.</p>
+                </div>
+                <div class="coach">
+                    <div class="coach-photo">
+                        <img src="imagenes/erick.png" style="width:90%" alt="Escudo Ferocity Academy">
+                    </div>
+                    <h3>Coach Erick</h3>
+                    <span>MMA</span>
+                    <p>Peleador profesioanl de MMA, con experiencia nacional e internacional.</p>
+                </div>
+                <div class="coach">
+                    <div class="coach-photo">
+                        <img src="imagenes/chuck.png" style="width:90%" alt="Escudo Ferocity Academy">
+                    </div>
+                    <h3>Coach Chuck</h3>
+                    <span>Kickboxing</span>
+                    <p>No enseña artes marciales; las artes marciales aprenden de Chuck Norris..</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacto">
+        <div class="wrap contact-grid">
+            <div class="contact-info reveal">
+                <h3>Dirección</h3>
+                <p class="big">Simon Plata Torres y Barbizoti<br>Esmeraldas, Ecuador</p>
+                <h3>Contacto</h3>
+                <p class="big" style="font-size:20px;">+593 99 000 0000<br>hola@ferocityacademy.com</p>
+                <h3>Horario de atención</h3>
+                <p class="big" style="font-size:20px;">Lunes a sábado<br>06:00 – 21:00</p>
+            </div>
+            <div class="reveal">
+                <form onsubmit="event.preventDefault(); document.getElementById('formMsg').style.display='block'; this.reset();">
+                    <div class="field">
+                        <label for="name">Nombre completo</label>
+                        <input id="name" type="text" required placeholder="Tu nombre">
+                    </div>
+                    <div class="field">
+                        <label for="phone">Teléfono</label>
+                        <input id="phone" type="tel" required placeholder="09XXXXXXXX">
+                    </div>
+                    <div class="field">
+                        <label for="disc">Disciplina de interés</label>
+                        <select id="disc">
+                            <option>Kickboxing</option>
+                            <option>Jiu Jitsu</option>
+                            <option>MMA</option>
+                            <option>Aún no lo sé</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="msg">Mensaje (opcional)</label>
+                        <textarea id="msg" placeholder="Cuéntanos tu experiencia previa, si tienes"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Reservar clase gratis</button>
+                    <p class="form-note" id="formMsg" style="display:none; color:var(--blood);">Listo. Te contactaremos en menos de 24 horas para coordinar tu clase.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site">
+        <div class="wrap">
+            <div class="footer-row">
+                <div class="footer-brand">
+                    <img src="imagenes/logo01.png" alt="Ferocity Academy">
+
+                </div>
+                <div class="footer-links">
+                    <a href="#disciplinas">Disciplinas</a>
+                    <a href="#horarios">Horarios</a>
+                    <a href="#entrenadores">Entrenadores</a>
+                    <a href="#contacto">Contacto</a>
+                </div>
+            </div>
+            <p class="footer-copy">© 2026 Ferocity Academy. Kickboxing · Jiu Jitsu · MMA.</p>
+        </div>
+    </footer>
+
+    <script>
+            // reveal on scroll
+            const revealEls = document.querySelectorAll('.reveal');
+            const io = new IntersectionObserver((entries)=>{
+              entries.forEach(entry=>{
+                if(entry.isIntersecting){
+                  entry.target.classList.add('is-visible');
+                  io.unobserve(entry.target);
+                }
+              });
+            }, {threshold:0.15});
+            revealEls.forEach(el=>io.observe(el));
+
+            // mobile nav toggle (simple anchor-based fallback keeps links reachable without JS too)
+    </script>
+
+</body>
+</html>
+
+@code {
+
+}

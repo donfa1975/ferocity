@@ -1,23 +1,51 @@
 ﻿@inherits LayoutComponentBase
+@using MudBlazor
+@using Ferocity.Services
+@rendermode InteractiveServer
 
-<div class="page">
-    <div class="sidebar">
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<MudLayout>
+
+    <MudAppBar Elevation="1" style="background:linear-gradient(180deg,rgba(10, 10, 10, 1) 0%, rgba(20, 20, 20, 1) 75%, rgba(84, 82, 76, 1) 98%, rgba(122, 14, 31, 1) 100%);">
+        
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       Edge="Edge.Start"
+                       OnClick="ToggleDrawer" />
+    </MudAppBar>
+
+    
+    <MudDrawer style="background: linear-gradient(180deg,rgba(10, 10, 10, 1) 0%, rgba(20, 20, 20, 1) 75%, rgba(84, 82, 76, 1) 98%, rgba(122, 14, 31, 1) 100%);" @bind-Open="drawer_open"
+               Elevation="1"
+               Variant="DrawerVariant.Responsive"
+               Breakpoint="Breakpoint.Md">
+
+
         <NavMenu />
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+    </MudDrawer>
 
-        <article class="content px-4">
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-8">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
+    
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+</MudLayout>
+
+@code {
+
+    private bool drawer_open = true;
+
+    private void ToggleDrawer()
+    {
+        drawer_open = !drawer_open;
+    }
+
+}

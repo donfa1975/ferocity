@@ -1,0 +1,17 @@
+﻿.hero-slash {
+    position: absolute;
+    top: -10%;
+    right: -6%;
+    width: 60%;
+    height: 130%;
+    background: linear-gradient(115deg, transparent 46%, var(--blood-dim) 47%, var(--blood) 49%, transparent 51%);
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.hero-grain {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(0deg, rgba(239,236,229,0.03) 0px, transparent 1px, transparent 3px);
+    pointer-events: none;
+}

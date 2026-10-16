@@ -1,0 +1,150 @@
+@page "/usuarios"
+@using Ferocity.Models
+@using Ferocity.Services
+@using Ferocity.Components.Dialogs
+@inject UsuarioService UsuarioService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@rendermode InteractiveServer
+
+
+
+<PageTitle>Gestión de usuarios</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h4">Gestión de usuarios</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Consulta, crea y edita las cuentas del sistema.</MudText>
+        </div>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.PersonAdd" OnClick="CrearUsuario">
+            Nuevo usuario
+        </MudButton>
+    </MudStack>
+
+    <MudDataGrid T="Tusuario" Items="_usuarios" Loading="_cargando" Filterable="true" QuickFilter="FiltroUsuarios" SortMode="SortMode.Multiple" Dense="true" Hover="true" Striped="true">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Usuarios</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_busqueda" Placeholder="Buscar usuario..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Immediate="true" Clearable="true" Class="mt-0" />
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="u => u.Idusuario" Title="ID" />
+            <PropertyColumn Property="u => u.Usuario" Title="Usuario" />
+            <PropertyColumn Property="u => u.Nombre" Title="Nombre" />
+            <TemplateColumn Title="Nivel">
+                <CellTemplate>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Info">@NombreNivel(context.Item.Nivel)</MudChip>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Acciones" Sortable="false" Filterable="false">
+                <CellTemplate>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Title="Editar usuario" OnClick="@(() => EditarUsuario(context.Item))" />
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <NoRecordsContent>
+            <MudText Class="pa-4">No hay usuarios para mostrar.</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudDataGridPager T="Tusuario" />
+        </PagerContent>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    private List<Tusuario> _usuarios = [];
+    private bool _cargando = true;
+    private string _busqueda = string.Empty;
+
+    protected override async Task OnInitializedAsync() => await CargarUsuarios();
+
+    private async Task CargarUsuarios()
+    {
+        _cargando = true;
+        try
+        {
+            _usuarios = await UsuarioService.GetUsuarios();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No se pudieron cargar los usuarios: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _cargando = false;
+        }
+    }
+
+    private async Task CrearUsuario()
+    {
+        var parameters = new DialogParameters<UsuarioDialog>
+        {
+            { x => x.Usuario, new Tusuario { Nivel = 3 } }
+        };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<UsuarioDialog>("Nuevo usuario", parameters, options);
+        var result = await dialog.Result;
+        if (result is { Canceled: false })
+        {
+            var usuario = (Tusuario)result.Data!;
+            try
+            {
+                await UsuarioService.AddUsuarioAsync(usuario);
+                Snackbar.Add("Usuario creado correctamente.", Severity.Success);
+                await CargarUsuarios();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"No se pudo crear el usuario: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task EditarUsuario(Tusuario usuario)
+    {
+        var parameters = new DialogParameters<UsuarioDialog>
+        {
+            { x => x.Usuario, new Tusuario { Idusuario = usuario.Idusuario, Usuario = usuario.Usuario, Password = usuario.Password, Nombre = usuario.Nombre, Nivel = usuario.Nivel } }
+        };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<UsuarioDialog>("Editar usuario", parameters, options);
+        var result = await dialog.Result;
+        if (result is { Canceled: false })
+        {
+            var actualizado = (Tusuario)result.Data!;
+            try
+            {
+                await UsuarioService.UpdateUsuarioAsync(actualizado);
+                Snackbar.Add("Usuario actualizado correctamente.", Severity.Success);
+                await CargarUsuarios();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"No se pudo actualizar el usuario: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private bool FiltroUsuarios(Tusuario usuario)
+    {
+        if (string.IsNullOrWhiteSpace(_busqueda))
+            return true;
+
+        var termino = _busqueda.Trim();
+        return (usuario.Usuario?.Contains(termino, StringComparison.OrdinalIgnoreCase) ?? false)
+            || (usuario.Nombre?.Contains(termino, StringComparison.OrdinalIgnoreCase) ?? false)
+            || usuario.Idusuario.ToString().Contains(termino, StringComparison.OrdinalIgnoreCase)
+            || NombreNivel(usuario.Nivel).Contains(termino, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NombreNivel(int? nivel) => nivel switch
+    {
+        1 => "Administrador",
+        2 => "Coatch",
+        3 => "Alumno",
+        _ => "Sin asignar"
+    };
+}
+
+

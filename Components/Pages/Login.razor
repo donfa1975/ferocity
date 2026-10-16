@@ -1,0 +1,124 @@
+﻿@page "/login"
+@layout EmptyLayout
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+@rendermode InteractiveServer
+
+<MudThemeProvider />
+<MudSnackbarProvider />
+
+@inject ISnackbar Snackbar
+<MudSnackbarProvider />
+
+<div class="login-page">
+    
+    <MudPaper Class="login-card" Elevation="0">
+
+        <div class="login-header">
+            <img src="imagenes/logo.png" alt="Logo" class="login-logo" />
+        </div>
+        
+        <!-- PASO 1: CÉDULA -->
+          <MudForm @ref="_formCedula">
+
+                <div class="login-form">
+
+                    <MudTextField T="string"
+                                  @bind-Value="_usuario"
+                                  Label="Usuario"
+                                  Placeholder="Ingresa tu usuario"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="El usuario es obligatorio"
+                                  Immediate="true"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Badge" />
+
+                    <MudTextField T="string"
+                              @bind-Value="_password"
+                              Label="Contraseña"
+                              Variant="Variant.Outlined"
+                              Required="true"
+                              RequiredError="La contraseña es obligatoria"
+                              InputType="InputType.Password"
+                              MaxLength="14"
+                              Immediate="true"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Lock" />    
+
+                    <MudButton Class="login-button"
+                               Variant="Variant.Filled"
+                               Color="Color.Dark"
+                               FullWidth="true"
+                               
+                               OnClick="Continuar">
+
+            
+
+                        <span>Continuar</span>
+
+                    </MudButton>
+
+                </div>
+
+            </MudForm>
+        
+        
+        <div class="login-footer">
+            <MudText Typo="Typo.caption" Color="Color.Warning">
+                @_mensaje
+            </MudText>
+        </div>
+
+        <!-- PIE -->
+        <div class="login-footer">
+
+            <MudText Typo="Typo.caption">
+                Ferocity 2026 - Todos los derechos reservados
+            </MudText>
+
+        </div>
+
+    </MudPaper>
+
+</div>
+
+@code {
+    private MudForm _formCedula;
+    private string _usuario;
+    private string _password;
+    private bool _cargando = true;
+    private string _mensaje = string.Empty;
+
+    private async Task Continuar()
+    {
+        _cargando = true;
+        _mensaje = string.Empty;
+     
+        if (_formCedula.IsValid)
+        {
+            // Aquí puedes agregar la lógica para autenticar al usuario
+            // Por ejemplo, llamar a un servicio de autenticación
+            // Simulación de autenticación exitosa
+            bool autenticacionExitosa = true; // Cambia esto según tu lógica
+            if (autenticacionExitosa)
+            {
+                Snackbar.Add("Inicio de sesión exitoso", Severity.Success);
+                // Redirigir a otra página o realizar otras acciones
+            }
+            else
+            {
+                _mensaje = "Usuario o contraseña incorrectos";
+                Snackbar.Add(_mensaje, Severity.Error);
+            }
+        }
+        else
+        {
+            _mensaje = "Por favor, completa todos los campos requeridos";
+            Snackbar.Add(_mensaje, Severity.Warning);
+        }
+        _cargando = false;
+    }
+
+}
