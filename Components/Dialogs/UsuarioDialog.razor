@@ -2,8 +2,6 @@
 @using Ferocity.Services
 @inject UsuarioService UsuarioService
 @inject ISnackbar Snackbar
-@rendermode InteractiveServer
-
 <MudDialog>
     <DialogContent>
         <MudForm @ref="_form" @bind-IsValid="_esValido">
@@ -46,4 +44,5 @@
         MudDialog.Close(DialogResult.Ok(Usuario));
     }
 }
+
 

@@ -1,0 +1,54 @@
+@using Ferocity.Models
+
+<MudDialog>
+    <DialogContent>
+        <MudStack Spacing="2">
+            <MudText Typo="Typo.body2">Alumno: <b>@NombreAlumno</b></MudText>
+            <MudNumericField T="decimal?" Label="Talla (cm)" @bind-Value="Biometria.Talla" Min="0" Format="N2" />
+            <MudNumericField T="decimal?" Label="Peso (kg)" @bind-Value="Biometria.Peso" Min="0" Format="N2" />
+            <MudNumericField T="decimal?" Label="Cuello (cm)" @bind-Value="Biometria.Cuello" Min="0" Format="N2" />
+            <MudNumericField T="decimal?" Label="Cintura (cm)" @bind-Value="Biometria.Cintura" Min="0" Format="N2" />
+            <MudNumericField T="decimal?" Label="Cadera (cm)" @bind-Value="Biometria.Cadera" Min="0" Format="N2" />
+            <MudNumericField T="decimal?" Label="IMC" @bind-Value="Biometria.Imc" Min="0" Format="N2" />
+            <MudNumericField T="decimal?" Label="IGC" @bind-Value="Biometria.Igc" Min="0" Format="N2" />
+            <MudTextField T="string" Label="Estado / observaciones" @bind-Value="Biometria.Estado" MaxLength="45" />
+            @if (_mostrarError)
+            {
+                <MudText Color="Color.Error" Typo="Typo.caption">Ingresa al menos una medición antes de guardar.</MudText>
+            }
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancelar">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Guardar">Guardar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public string NombreAlumno { get; set; } = string.Empty;
+
+    private Tbiometrium Biometria { get; set; } = new();
+    private bool _mostrarError;
+
+    private void Cancelar() => MudDialog.Cancel();
+
+    private void Guardar()
+    {
+        var tieneMediciones = Biometria.Talla.HasValue || Biometria.Peso.HasValue
+            || Biometria.Cuello.HasValue || Biometria.Cintura.HasValue || Biometria.Cadera.HasValue
+            || Biometria.Imc.HasValue || Biometria.Igc.HasValue
+            || !string.IsNullOrWhiteSpace(Biometria.Estado);
+
+        if (!tieneMediciones)
+        {
+            _mostrarError = true;
+            return;
+        }
+
+        MudDialog.Close(DialogResult.Ok(Biometria));
+    }
+}

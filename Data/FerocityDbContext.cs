@@ -65,6 +65,9 @@ public partial class FerocityDbContext : DbContext
             entity.Property(e => e.Valorapagar)
                 .HasPrecision(8)
                 .HasColumnName("valorapagar");
+            entity.Property(e => e.Proximopago)
+                .HasColumnType("datetime")
+                .HasColumnName("proximopago");  
         });
 
         modelBuilder.Entity<Tbiometrium>(entity =>

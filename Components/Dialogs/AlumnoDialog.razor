@@ -1,0 +1,75 @@
+@using Ferocity.Models
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" @bind-IsValid="_esValido">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField T="string" Label="Código" @bind-Value="Alumno.Codigo" MaxLength="45" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="string" Label="Tipo de alumno" @bind-Value="Alumno.Tipo" Required="true" RequiredError="Selecciona Diario o Mensual.">
+                        <MudSelectItem T="string" Value="@("Mensual")">Mensual</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("Diario")">Diario</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField T="string" Label="Nombres" @bind-Value="Alumno.Nombres" Required="true" RequiredError="Ingresa los nombres." MaxLength="45" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField T="string" Label="Apellidos" @bind-Value="Alumno.Apellidos" Required="true" RequiredError="Ingresa los apellidos." MaxLength="45" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudDatePicker Label="Fecha de nacimiento" @bind-Date="Alumno.Fechanac" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudDatePicker Label="Fecha de inscripción" @bind-Date="Alumno.Fechinscripcion" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudNumericField T="decimal?" Label="Valor del pago" @bind-Value="Alumno.Valorapagar" Required="true" RequiredError="Ingresa el valor que se cobrará." Min="0" Format="N2" Adornment="Adornment.Start" AdornmentText="$" />
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Este valor se utilizará al registrar cada cobro.</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="sbyte?" Label="Estado" @bind-Value="Alumno.Activo">
+                        <MudSelectItem T="sbyte?" Value="1">Activo</MudSelectItem>
+                        <MudSelectItem T="sbyte?" Value="0">Inactivo</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle2" Class="mb-1">Disciplinas</MudText>
+                    <MudStack Row="true" Spacing="3">
+                        <MudCheckBox T="bool" Label="Jiu-jitsu" Value="@(Alumno.Jiujitsu == 1)" ValueChanged="@(v => Alumno.Jiujitsu = v ? (sbyte)1 : (sbyte)0)" />
+                        <MudCheckBox T="bool" Label="Kickboxing" Value="@(Alumno.Kickboxing == 1)" ValueChanged="@(v => Alumno.Kickboxing = v ? (sbyte)1 : (sbyte)0)" />
+                        <MudCheckBox T="bool" Label="MMA" Value="@(Alumno.Mma == 1)" ValueChanged="@(v => Alumno.Mma = v ? (sbyte)1 : (sbyte)0)" />
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancelar">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="GuardarAsync">Guardar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public Talumno Alumno { get; set; } = new();
+
+    private MudForm _form = null!;
+    private bool _esValido;
+
+    private void Cancelar() => MudDialog.Cancel();
+
+    private async Task GuardarAsync()
+    {
+        await _form.Validate();
+        if (!_esValido)
+            return;
+
+        MudDialog.Close(DialogResult.Ok(Alumno));
+    }
+}

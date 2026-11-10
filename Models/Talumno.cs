@@ -31,6 +31,8 @@ public partial class Talumno
 
     public sbyte? Mma { get; set; }
 
+    public DateTime? Proximopago { get; set; }
+
     public virtual ICollection<Tbiometrium> Tbiometria { get; set; } = new List<Tbiometrium>();
 
     public virtual ICollection<Tpago> Tpagos { get; set; } = new List<Tpago>();

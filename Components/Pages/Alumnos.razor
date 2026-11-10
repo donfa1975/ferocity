@@ -1,0 +1,225 @@
+@page "/alumnos"
+@using Ferocity.Models
+@using Ferocity.Services
+@using Ferocity.Components.Dialogs
+@inject AlumnoService AlumnoService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Gestión de alumnos</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h4">Gestión de alumnos</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Administra inscripciones, pagos y datos biométricos.</MudText>
+        </div>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.PersonAdd" OnClick="CrearAlumnoAsync">
+            Nuevo alumno
+        </MudButton>
+    </MudStack>
+
+    <MudDataGrid T="Talumno" Items="_alumnos" Loading="_cargando" Filterable="true" QuickFilter="FiltrarAlumno" SortMode="SortMode.Multiple" Dense="true" Hover="true" Striped="true">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Alumnos</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_busqueda" Placeholder="Buscar alumno..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Immediate="true" Clearable="true" Class="mt-0" />
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="a => a.Codigo" Title="Código" />
+            <TemplateColumn Title="Alumno">
+                <CellTemplate>
+                    <MudText Typo="Typo.body1">@($"{context.Item.Nombres} {context.Item.Apellidos}".Trim())</MudText>
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="a => a.Tipo" Title="Tipo" />
+            <TemplateColumn Title="Pago">
+                <CellTemplate>
+                    @context.Item.Valorapagar?.ToString("C2")
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Próximo pago">
+                <CellTemplate>
+                    @(context.Item.Proximopago?.ToString("dd/MM/yyyy") ?? "Sin registro")
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Estado">
+                <CellTemplate>
+                    <MudChip T="string" Size="Size.Small" Color="@(context.Item.Activo == 1 ? Color.Success : Color.Default)">
+                        @(context.Item.Activo == 1 ? "Activo" : "Inactivo")
+                    </MudChip>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Acciones" Sortable="false" Filterable="false">
+                <CellTemplate>
+                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Success" StartIcon="@Icons.Material.Filled.Payments" Disabled="@(context.Item.Activo != 1 || _procesando)" OnClick="@(() => CobrarAsync(context.Item))">Cobrar</MudButton>
+                        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Info" StartIcon="@Icons.Material.Filled.MonitorWeight" OnClick="@(() => AbrirBiometriaAsync(context.Item))">Biometría</MudButton>
+                        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => EditarAlumnoAsync(context.Item))">Editar</MudButton>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <NoRecordsContent>
+            <MudText Class="pa-4">No hay alumnos para mostrar.</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudDataGridPager T="Talumno" />
+        </PagerContent>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    private List<Talumno> _alumnos = [];
+    private bool _cargando = true;
+    private bool _procesando;
+    private string _busqueda = string.Empty;
+
+    protected override async Task OnInitializedAsync() => await CargarAlumnosAsync();
+
+    private async Task CargarAlumnosAsync()
+    {
+        _cargando = true;
+        try
+        {
+            _alumnos = await AlumnoService.GetAlumnos();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No se pudieron cargar los alumnos: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _cargando = false;
+        }
+    }
+
+    private async Task CrearAlumnoAsync()
+    {
+        var nuevo = new Talumno
+        {
+            Tipo = "Mensual",
+            Fechinscripcion = DateTime.Today,
+            Activo = 1,
+            Jiujitsu = 0,
+            Kickboxing = 0,
+            Mma = 0
+        };
+        var parameters = new DialogParameters<AlumnoDialog> { { x => x.Alumno, nuevo } };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<AlumnoDialog>("Nuevo alumno", parameters, options);
+        var result = await dialog.Result;
+        if (result is not { Canceled: false, Data: Talumno alumno })
+            return;
+
+        try
+        {
+            await AlumnoService.AddAlumnoAsync(alumno);
+            Snackbar.Add("Alumno registrado correctamente.", Severity.Success);
+            await CargarAlumnosAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No se pudo registrar el alumno: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task EditarAlumnoAsync(Talumno actual)
+    {
+        var copia = CopiarAlumno(actual);
+        var parameters = new DialogParameters<AlumnoDialog> { { x => x.Alumno, copia } };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<AlumnoDialog>("Editar alumno", parameters, options);
+        var result = await dialog.Result;
+        if (result is not { Canceled: false, Data: Talumno actualizado })
+            return;
+
+        try
+        {
+            await AlumnoService.UpdateAlumnoAsync(actualizado);
+            Snackbar.Add("Alumno actualizado correctamente.", Severity.Success);
+            await CargarAlumnosAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No se pudo actualizar el alumno: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task AbrirBiometriaAsync(Talumno alumno)
+    {
+        var parameters = new DialogParameters<BiometriaDialog> { { x => x.NombreAlumno, $"{alumno.Nombres} {alumno.Apellidos}".Trim() } };
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<BiometriaDialog>("Registrar biometría", parameters, options);
+        var result = await dialog.Result;
+        if (result is not { Canceled: false, Data: Tbiometrium biometria })
+            return;
+
+        try
+        {
+            if (await AlumnoService.RegistraBiometria(alumno.Idalumno, biometria))
+                Snackbar.Add("Biometría registrada correctamente.", Severity.Success);
+            else
+                Snackbar.Add("No se encontró el alumno para registrar la biometría.", Severity.Warning);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No se pudo registrar la biometría: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task CobrarAsync(Talumno alumno)
+    {
+        _procesando = true;
+        try
+        {
+            if (await AlumnoService.RegistraPagoAsync(alumno.Idalumno))
+            {
+                Snackbar.Add($"Pago registrado para {alumno.Nombres} {alumno.Apellidos}.", Severity.Success);
+                await CargarAlumnosAsync();
+            }
+            else
+            {
+                Snackbar.Add("No se registró el pago. Verifica que el alumno tenga un tipo y un valor de pago configurados.", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No se pudo registrar el pago: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _procesando = false;
+        }
+    }
+
+    private bool FiltrarAlumno(Talumno alumno)
+    {
+        if (string.IsNullOrWhiteSpace(_busqueda))
+            return true;
+
+        var termino = _busqueda.Trim();
+        return (alumno.Codigo?.Contains(termino, StringComparison.OrdinalIgnoreCase) ?? false)
+            || (alumno.Nombres?.Contains(termino, StringComparison.OrdinalIgnoreCase) ?? false)
+            || (alumno.Apellidos?.Contains(termino, StringComparison.OrdinalIgnoreCase) ?? false)
+            || (alumno.Tipo?.Contains(termino, StringComparison.OrdinalIgnoreCase) ?? false);
+    }
+
+    private static Talumno CopiarAlumno(Talumno alumno) => new()
+    {
+        Idalumno = alumno.Idalumno,
+        Codigo = alumno.Codigo,
+        Nombres = alumno.Nombres,
+        Apellidos = alumno.Apellidos,
+        Fechanac = alumno.Fechanac,
+        Fechinscripcion = alumno.Fechinscripcion,
+        Fechaultimopago = alumno.Fechaultimopago,
+        Valorapagar = alumno.Valorapagar,
+        Activo = alumno.Activo,
+        Tipo = alumno.Tipo,
+        Jiujitsu = alumno.Jiujitsu,
+        Kickboxing = alumno.Kickboxing,
+        Mma = alumno.Mma,
+        Proximopago = alumno.Proximopago
+    };
+}
