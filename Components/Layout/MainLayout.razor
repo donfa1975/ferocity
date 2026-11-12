@@ -1,6 +1,7 @@
 @inherits LayoutComponentBase
 @using MudBlazor
 @using Ferocity.Services
+@inject UsuarioService UsuarioService
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -15,6 +16,7 @@
                        Color="Color.Inherit"
                        Edge="Edge.Start"
                        OnClick="ToggleDrawer" />
+                       Hola
     </MudAppBar>
 
     
@@ -22,7 +24,8 @@
                Elevation="1"
                Variant="DrawerVariant.Responsive"
                Breakpoint="Breakpoint.Md">
-
+                
+               Usuario: @UsuarioService.nombreUsuario
 
         <NavMenu />
 

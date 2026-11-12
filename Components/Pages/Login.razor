@@ -1,7 +1,10 @@
 @page "/login"
 @layout EmptyLayout
+@using Ferocity.Services
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject UsuarioService UsuarioService
+
 <MudThemeProvider />
 <MudSnackbarProvider />
 
@@ -98,11 +101,14 @@
             // Aquí puedes agregar la lógica para autenticar al usuario
             // Por ejemplo, llamar a un servicio de autenticación
             // Simulación de autenticación exitosa
-            bool autenticacionExitosa = true; // Cambia esto según tu lógica
+            bool autenticacionExitosa = false; // Cambia esto según tu lógica
+
+            autenticacionExitosa = await UsuarioService.validaUsuario(_usuario, _password);
+
             if (autenticacionExitosa)
             {
-                Snackbar.Add("Inicio de sesión exitoso", Severity.Success);
-                // Redirigir a otra página o realizar otras acciones
+                
+                Navigation.NavigateTo("/inicio"); 
             }
             else
             {
