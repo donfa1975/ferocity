@@ -15,8 +15,8 @@ namespace Ferocity.Services
     {
         private readonly IDbContextFactory<FerocityDbContext> _contextFactory;
 
-        private int nivelAcceso;
-        private string nombreUsuario;
+        public int nivelAcceso;
+        public string nombreUsuario;
 
         public UsuarioService(IDbContextFactory<FerocityDbContext> contextFactory)
         {
@@ -50,7 +50,7 @@ namespace Ferocity.Services
             if (usuario != null && usuario.Password == password)
             {
                 nivelAcceso = (int)usuario.Nivel;
-                nombreUsuario = usuario.Usuario;
+                nombreUsuario = usuario.Nombre;
                 return true;
             }
             return false;

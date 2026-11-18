@@ -81,6 +81,16 @@ public class AlumnoService
         else
             return false;
 
+        int diapago =(int)proximoPago.DayOfWeek;
+        if(diapago==0)//domingo
+        {
+            proximoPago = proximoPago.AddDays(1);
+        }
+        else if (diapago == 6)//sabado
+        {
+            proximoPago = proximoPago.AddDays(2);
+        }
+
         alumno.Fechaultimopago = fechaPago;
         alumno.Proximopago = proximoPago;
         context.Tpagos.Add(new Tpago

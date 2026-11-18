@@ -25,6 +25,7 @@ builder.Services.AddDbContextFactory<FerocityDbContext>(options =>
 
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<AlumnoService>();
+builder.Services.AddScoped<DashBoardService>();
 /*builder.Services.AddScoped<VacantesServices>();
 
 builder.Services.AddSingleton<ParametrosService>();*/

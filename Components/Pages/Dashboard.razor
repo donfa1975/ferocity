@@ -1,0 +1,133 @@
+@page "/dashboard"
+@using Ferocity.Models
+@using Ferocity.Services
+@inject DashBoardService DashBoardService
+@inject AlumnoService AlumnoService
+@inject ISnackbar Snackbar
+
+<PageTitle>Dashboard</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6 mb-6">
+    <MudStack Spacing="1" Class="mb-5">
+        <MudText Typo="Typo.h4">Dashboard</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">Resumen de alumnos y pagos de esta semana.</MudText>
+    </MudStack>
+
+    <MudGrid Class="mb-4">
+        <MudItem xs="12" sm="6" lg="3">
+            <MudPaper Elevation="1" Class="pa-4 rounded-lg">
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Alumnos activos</MudText>
+                <MudText Typo="Typo.h4" Class="mt-2">@(_cargando ? "—" : _totalAlumnos.ToString())</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MudPaper Elevation="1" Class="pa-4 rounded-lg">
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Deben pagar esta semana</MudText>
+                <MudText Typo="Typo.h4" Class="mt-2">@(_cargando ? "—" : _alumnosPorPagar.Count.ToString())</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MudPaper Elevation="1" Class="pa-4 rounded-lg">
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Estimado por cobrar</MudText>
+                <MudText Typo="Typo.h4" Class="mt-2">@(_cargando ? "—" : _estimado.ToString("C2"))</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MudPaper Elevation="1" Class="pa-4 rounded-lg">
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Cobrado esta semana</MudText>
+                <MudText Typo="Typo.h4" Class="mt-2">@(_cargando ? "—" : _cobrado.ToString("C2"))</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudPaper Elevation="1" Class="rounded-lg">
+        <MudDataGrid T="Talumno" Items="_alumnosPorPagar" Loading="_cargando" Dense="true" Hover="true" Striped="true">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Pagos de esta semana</MudText>
+                <MudSpacer />
+                <MudText Typo="Typo.body2" Color="Color.Secondary">@DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek).ToString("dd/MM") – @DateTime.Today.AddDays(6 - (int)DateTime.Today.DayOfWeek).ToString("dd/MM/yyyy")</MudText>
+            </ToolBarContent>
+            <Columns>
+                <TemplateColumn Title="Alumno">
+                    <CellTemplate>
+                        <MudText Typo="Typo.body1">@($"{context.Item.Nombres} {context.Item.Apellidos}".Trim())</MudText>
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Title="Fecha de pago">
+                    <CellTemplate>
+                        @{ var vencido = context.Item.Proximopago?.Date < DateTime.Today; }
+                        <MudText Color="@(vencido ? Color.Error : Color.Success)">@(context.Item.Proximopago?.ToString("dd/MM/yyyy") ?? "Sin registro")</MudText>
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Title="Valor">
+                    <CellTemplate>@(context.Item.Valorapagar?.ToString("C2") ?? "—")</CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Title="Acciones" Sortable="false" Filterable="false">
+                    <CellTemplate>
+                        <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Success" StartIcon="@Icons.Material.Filled.Payments" Disabled="@(_procesando || context.Item.Activo != 1)" OnClick="@(() => CobrarAsync(context.Item))">Cobrar</MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <NoRecordsContent>
+                <MudText Class="pa-4">No hay alumnos con pago previsto para esta semana.</MudText>
+            </NoRecordsContent>
+        </MudDataGrid>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<Talumno> _alumnosPorPagar = [];
+    private int _totalAlumnos;
+    private decimal _estimado;
+    private decimal _cobrado;
+    private bool _cargando = true;
+    private bool _procesando;
+
+    protected override async Task OnInitializedAsync() => await CargarDashboardAsync();
+
+    private async Task CargarDashboardAsync()
+    {
+        _cargando = true;
+        try
+        {
+            _totalAlumnos = await DashBoardService.GetTotalAlumnosAsync();
+            _alumnosPorPagar = await DashBoardService.GetProximosPagos();
+            var pagos = await DashBoardService.GetPagosSemanales();
+            _estimado = _alumnosPorPagar.Sum(x => x.Valorapagar ?? 0m);
+            _cobrado = pagos.Sum(x => x.Valor ?? 0m);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No se pudo cargar el dashboard: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _cargando = false;
+        }
+    }
+
+    private async Task CobrarAsync(Talumno alumno)
+    {
+        _procesando = true;
+        try
+        {
+            if (await AlumnoService.RegistraPagoAsync(alumno.Idalumno))
+            {
+                Snackbar.Add($"Pago registrado para {alumno.Nombres} {alumno.Apellidos}.", Severity.Success);
+                await CargarDashboardAsync();
+            }
+            else
+            {
+                Snackbar.Add("No se registró el pago. Verifica que el alumno tenga un tipo y un valor de pago configurados.", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"No se pudo registrar el pago: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _procesando = false;
+        }
+    }
+}
